@@ -1,31 +1,26 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, KeyRound, Sparkles, ArrowRight, ShieldCheck, User } from 'lucide-react';
+import Link from 'next/link';
+import { Mail, Lock, KeyRound, ArrowRight, User } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   const [tab, setTab] = useState<'password' | 'otp' | 'register'>('password');
-
-  // Form states
   const [email, setEmail] = useState('ayush@spendx.app');
   const [password, setPassword] = useState('admin123');
   const [name, setName] = useState('Ayush Singh');
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const [infoMsg, setInfoMsg] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [infoMsg, setInfoMsg] = useState('');
 
-  // 1. Password Login
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
-    setInfoMsg('');
     setLoading(true);
-
+    setErrorMsg('');
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
@@ -33,8 +28,9 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Login failed');
-
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Invalid credentials');
+      }
       router.push('/dashboard');
     } catch (err: any) {
       setErrorMsg(err.message || 'Login failed');
@@ -43,13 +39,10 @@ export default function LoginPage() {
     }
   };
 
-  // 2. Send OTP
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
-    setInfoMsg('');
     setLoading(true);
-
+    setErrorMsg('');
     try {
       const res = await fetch('/api/auth/otp', {
         method: 'POST',
@@ -57,13 +50,11 @@ export default function LoginPage() {
         body: JSON.stringify({ action: 'send', email }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to send OTP');
-
-      setOtpSent(true);
-      setInfoMsg(data.message);
-      if (data.demoCode) {
-        setOtp(data.demoCode);
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to send OTP');
       }
+      setOtpSent(true);
+      setInfoMsg('Verification code sent. Use test code: 123456');
     } catch (err: any) {
       setErrorMsg(err.message || 'Failed to send OTP');
     } finally {
@@ -71,12 +62,10 @@ export default function LoginPage() {
     }
   };
 
-  // 3. Verify OTP & Login
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
     setLoading(true);
-
+    setErrorMsg('');
     try {
       const res = await fetch('/api/auth/otp', {
         method: 'POST',
@@ -84,32 +73,31 @@ export default function LoginPage() {
         body: JSON.stringify({ action: 'verify', email, otp }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'OTP verification failed');
-
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Invalid or expired OTP');
+      }
       router.push('/dashboard');
     } catch (err: any) {
-      setErrorMsg(err.message || 'OTP verification failed');
+      setErrorMsg(err.message || 'Verification failed');
     } finally {
       setLoading(false);
     }
   };
 
-  // 4. Register
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
-    setInfoMsg('');
     setLoading(true);
-
+    setErrorMsg('');
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ email, password, name }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Registration failed');
-
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Registration failed');
+      }
       router.push('/dashboard');
     } catch (err: any) {
       setErrorMsg(err.message || 'Registration failed');
@@ -119,30 +107,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden text-white selection:bg-blue-600">
-      {/* Background Ambient Glows */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none" />
-
+    <div className="min-h-screen bg-black flex flex-col justify-center items-center p-4 text-zinc-100 font-sans">
       {/* Brand Header */}
-      <div className="text-center mb-8 relative z-10">
-        <Link href="/" className="inline-flex items-center gap-2.5 mb-2 group">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-xl shadow-blue-500/20 group-hover:scale-105 transition-transform">
-            <span className="font-black text-xl">X</span>
-          </div>
-          <span className="font-black text-2xl tracking-tight">
-            Spend<span className="text-blue-500">X</span>
+      <div className="text-center mb-6">
+        <Link href="/" className="inline-flex items-center gap-2 mb-2">
+          <span className="w-6 h-6 rounded bg-white text-black flex items-center justify-center font-bold text-xs">
+            X
           </span>
+          <span className="font-semibold text-lg tracking-tight text-white">SpendX</span>
         </Link>
-        <p className="text-xs text-slate-400 font-medium">
-          Custom Database Auth • INR (₹) Financial PWA
+        <p className="text-xs text-zinc-500">
+          Database Authentication • Custom Session Engine
         </p>
       </div>
 
-      {/* Main Glass Card */}
-      <div className="w-full max-w-md rounded-3xl backdrop-blur-2xl bg-slate-900/80 border border-white/10 shadow-2xl p-6 sm:p-8 relative z-10">
+      {/* Main Card */}
+      <div className="w-full max-w-sm rounded-xl bg-[#0c0c0e] border border-zinc-800 p-6 shadow-2xl">
         {/* Navigation Tabs */}
-        <div className="grid grid-cols-3 gap-1 bg-slate-950/60 p-1 rounded-2xl mb-6 border border-white/5">
+        <div className="grid grid-cols-3 gap-1 bg-zinc-900 p-1 rounded-lg mb-5 border border-zinc-800">
           <button
             type="button"
             onClick={() => {
@@ -150,10 +132,10 @@ export default function LoginPage() {
               setErrorMsg('');
               setInfoMsg('');
             }}
-            className={`py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`py-1.5 rounded-md text-xs font-medium transition-colors ${
               tab === 'password'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-zinc-800 text-white'
+                : 'text-zinc-400 hover:text-white'
             }`}
           >
             Password
@@ -165,13 +147,13 @@ export default function LoginPage() {
               setErrorMsg('');
               setInfoMsg('');
             }}
-            className={`py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`py-1.5 rounded-md text-xs font-medium transition-colors ${
               tab === 'otp'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-zinc-800 text-white'
+                : 'text-zinc-400 hover:text-white'
             }`}
           >
-            6-Digit OTP
+            OTP
           </button>
           <button
             type="button"
@@ -180,10 +162,10 @@ export default function LoginPage() {
               setErrorMsg('');
               setInfoMsg('');
             }}
-            className={`py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`py-1.5 rounded-md text-xs font-medium transition-colors ${
               tab === 'register'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-zinc-800 text-white'
+                : 'text-zinc-400 hover:text-white'
             }`}
           >
             Register
@@ -192,49 +174,49 @@ export default function LoginPage() {
 
         {/* Notifications */}
         {errorMsg && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-950/40 border border-rose-800 text-rose-300 text-xs font-medium">
+          <div className="mb-4 p-2.5 rounded-lg bg-rose-950/60 border border-rose-900/60 text-rose-300 text-xs font-mono">
             {errorMsg}
           </div>
         )}
         {infoMsg && (
-          <div className="mb-4 p-3 rounded-xl bg-blue-950/40 border border-blue-800 text-blue-300 text-xs font-medium">
+          <div className="mb-4 p-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-mono">
             {infoMsg}
           </div>
         )}
 
         {/* TAB 1: Password Login */}
         {tab === 'password' && (
-          <form onSubmit={handlePasswordLogin} className="space-y-4">
+          <form onSubmit={handlePasswordLogin} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                Email Address
+              <label className="block text-xs font-medium text-zinc-400 mb-1">
+                Email
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your.email@example.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950/60 border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  placeholder="name@example.com"
+                  className="w-full pl-9 pr-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-700"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-medium text-zinc-400 mb-1">
                 Password
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950/60 border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full pl-9 pr-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-700"
                 />
               </div>
             </div>
@@ -242,32 +224,32 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 active:scale-98 transition-all"
+              className="w-full py-2 rounded-lg bg-white hover:bg-zinc-200 text-black font-medium text-xs flex items-center justify-center gap-1.5 transition-colors mt-2"
             >
-              <span>{loading ? 'Authenticating...' : 'Sign In with Password'}</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
         )}
 
         {/* TAB 2: OTP Login */}
         {tab === 'otp' && (
-          <div className="space-y-4">
+          <div className="space-y-3.5">
             {!otpSent ? (
-              <form onSubmit={handleSendOtp} className="space-y-4">
+              <form onSubmit={handleSendOtp} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                    Email for Instant OTP
+                  <label className="block text-xs font-medium text-zinc-400 mb-1">
+                    Email for OTP
                   </label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <Mail className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
                     <input
                       type="email"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="your.email@example.com"
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950/60 border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      placeholder="name@example.com"
+                      className="w-full pl-9 pr-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-700"
                     />
                   </div>
                 </div>
@@ -275,16 +257,16 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 active:scale-98 transition-all"
+                  className="w-full py-2 rounded-lg bg-white hover:bg-zinc-200 text-black font-medium text-xs flex items-center justify-center gap-1.5 transition-colors mt-2"
                 >
-                  <KeyRound className="w-4 h-4" />
-                  <span>{loading ? 'Generating...' : 'Send 6-Digit OTP'}</span>
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span>{loading ? 'Generating...' : 'Request Code'}</span>
                 </button>
               </form>
             ) : (
-              <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <form onSubmit={handleVerifyOtp} className="space-y-3.5">
                 <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-medium text-zinc-400 mb-1">
                     Enter 6-Digit Code
                   </label>
                   <input
@@ -294,29 +276,28 @@ export default function LoginPage() {
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="123456"
-                    className="w-full px-4 py-3.5 text-center tracking-[0.5em] text-2xl font-black rounded-xl bg-slate-950/60 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                    className="w-full px-3 py-2.5 text-center tracking-[0.4em] font-mono text-xl font-bold rounded-lg bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-zinc-700"
                     autoFocus
                   />
-                  <p className="text-[10px] text-slate-400 mt-1.5 text-center">
-                    Check terminal log or use demo code: <strong className="text-blue-400">123456</strong>
+                  <p className="text-[11px] text-zinc-500 mt-1 text-center font-mono">
+                    Test code: 123456
                   </p>
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 active:scale-98 transition-all"
+                  className="w-full py-2 rounded-lg bg-white hover:bg-zinc-200 text-black font-medium text-xs flex items-center justify-center gap-1.5 transition-colors"
                 >
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>{loading ? 'Verifying...' : 'Verify OTP & Log In'}</span>
+                  <span>{loading ? 'Verifying...' : 'Verify & Enter'}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setOtpSent(false)}
-                  className="w-full text-center text-xs text-slate-400 hover:text-white"
+                  className="w-full text-center text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
                 >
-                  Change Email
+                  Use a different email
                 </button>
               </form>
             )}
@@ -325,54 +306,54 @@ export default function LoginPage() {
 
         {/* TAB 3: Register */}
         {tab === 'register' && (
-          <form onSubmit={handleRegister} className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-medium text-zinc-400 mb-1">
                 Full Name
               </label>
               <div className="relative">
-                <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <User className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ayush Singh"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950/60 border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full pl-9 pr-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-700"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                Email Address
+              <label className="block text-xs font-medium text-zinc-400 mb-1">
+                Email
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your.email@example.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950/60 border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  placeholder="name@example.com"
+                  className="w-full pl-9 pr-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-700"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-medium text-zinc-400 mb-1">
                 Password
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Lock className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950/60 border border-white/10 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full pl-9 pr-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-700"
                 />
               </div>
             </div>
@@ -380,22 +361,17 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 active:scale-98 transition-all"
+              className="w-full py-2 rounded-lg bg-white hover:bg-zinc-200 text-black font-medium text-xs flex items-center justify-center gap-1.5 transition-colors mt-2"
             >
-              <span>{loading ? 'Creating Account...' : 'Create SpendX Account'}</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>{loading ? 'Creating...' : 'Create Account'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </form>
         )}
 
         {/* Demo Credentials Helper */}
-        <div className="mt-6 pt-4 border-t border-white/10 text-[11px] text-slate-400 text-center space-y-1">
-          <p>
-            <Sparkles className="w-3 h-3 text-amber-400 inline mr-1" />
-            <strong>Instant Demo Access:</strong> <br />
-            Email: <code className="text-blue-300">ayush@spendx.app</code> | Password:{' '}
-            <code className="text-blue-300">admin123</code>
-          </p>
+        <div className="mt-5 pt-3 border-t border-zinc-800/80 text-[11px] text-zinc-500 text-center font-mono">
+          Demo: <span className="text-zinc-300">ayush@spendx.app</span> / <span className="text-zinc-300">admin123</span>
         </div>
       </div>
     </div>

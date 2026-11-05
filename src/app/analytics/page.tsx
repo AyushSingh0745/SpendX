@@ -8,7 +8,7 @@ import QuickAddSheet from '@/components/dashboard/QuickAddSheet';
 import ChatDrawer from '@/components/ai/ChatDrawer';
 import { MonthlySummary } from '@/types';
 import { formatINR } from '@/lib/constants';
-import { Calendar, TrendingUp, TrendingDown, Wallet, CalendarDays, Sparkles } from 'lucide-react';
+import { Calendar, TrendingUp, TrendingDown, Wallet, Percent } from 'lucide-react';
 
 export default function AnalyticsPage() {
   const [summary, setSummary] = useState<MonthlySummary>({
@@ -20,18 +20,31 @@ export default function AnalyticsPage() {
     dailyAllowance: 0,
     categories: [],
   });
-  const [selectedMonth, setSelectedMonth] = useState('2026-11');
+  const [availableMonths, setAvailableMonths] = useState<string[]>([]);
+  const [selectedMonth, setSelectedMonth] = useState('');
   const [loading, setLoading] = useState(true);
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
 
-  const availableMonths = ['2026-11', '2026-10', '2026-09', '2026-08'];
+  useEffect(() => {
+    if (!selectedMonth) {
+      setSelectedMonth(new Date().toISOString().substring(0, 7));
+    }
+  }, [selectedMonth]);
 
-  const fetchAnalytics = async (month: string) => {
-    setLoading(true);
+  const fetchAnalytics = async (m?: string) => {
     try {
-      const res = await fetch(`/api/summary?month=${month}`);
+      const target = m || selectedMonth;
+      const res = await fetch(`/api/summary?month=${target}`);
       const data = await res.json();
-      if (data.summary) setSummary(data.summary);
+      if (data.summary) {
+        setSummary(data.summary);
+      }
+      const months = [
+        target,
+        new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().substring(0, 7),
+        new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().substring(0, 7),
+      ];
+      setAvailableMonths(Array.from(new Set(months)));
     } catch (err) {
       console.error(err);
     } finally {
@@ -40,35 +53,37 @@ export default function AnalyticsPage() {
   };
 
   useEffect(() => {
-    fetchAnalytics(selectedMonth);
+    if (selectedMonth) {
+      fetchAnalytics(selectedMonth);
+    }
   }, [selectedMonth]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white pb-28 md:pb-12 transition-colors">
+    <div className="min-h-screen bg-black text-zinc-100 pb-28 md:pb-16 font-sans">
       <DesktopNav onOpenQuickAdd={() => setIsQuickAddOpen(true)} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 space-y-6">
-        {/* Top Header with Month Selector */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-zinc-900">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-              Financial Analytics & Reports
+            <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-white">
+              Reports & Cashflow Analytics
             </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
-              Deep dive into category spending distribution, cashflow, and savings
+            <p className="text-xs text-zinc-400 mt-1">
+              Historical performance, savings rates, and category proportions
             </p>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto bg-white dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <Calendar className="w-4 h-4 text-slate-400 ml-2" />
+          <div className="flex items-center gap-2 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800">
+            <Calendar className="w-3.5 h-3.5 text-zinc-500" />
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="bg-transparent border-none text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none pr-3 py-1 cursor-pointer"
+              className="bg-transparent border-none text-xs font-mono text-white focus:outline-none cursor-pointer"
             >
               {availableMonths.map((m) => (
-                <option key={m} value={m} className="dark:bg-slate-900 text-slate-900 dark:text-white">
-                  Month: {m}
+                <option key={m} value={m} className="bg-zinc-900 text-white">
+                  Period: {m}
                 </option>
               ))}
             </select>
@@ -76,53 +91,53 @@ export default function AnalyticsPage() {
         </div>
 
         {/* 4 Summary KPIs */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-          <div className="p-5 rounded-3xl backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="p-4 rounded-xl bg-[#0c0c0e] border border-zinc-800/80">
+            <div className="text-xs font-medium text-zinc-400 flex items-center justify-between">
               <span>Inflow</span>
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
             </div>
-            <div className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+            <div className="text-xl font-semibold text-white font-mono mt-2">
               {formatINR(summary.income)}
             </div>
           </div>
 
-          <div className="p-5 rounded-3xl backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1">
-              <TrendingDown className="w-3.5 h-3.5" />
+          <div className="p-4 rounded-xl bg-[#0c0c0e] border border-zinc-800/80">
+            <div className="text-xs font-medium text-zinc-400 flex items-center justify-between">
               <span>Outflow</span>
+              <TrendingDown className="w-3.5 h-3.5 text-zinc-400" />
             </div>
-            <div className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+            <div className="text-xl font-semibold text-white font-mono mt-2">
               {formatINR(summary.expenses)}
             </div>
           </div>
 
-          <div className="p-5 rounded-3xl backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1">
-              <Wallet className="w-3.5 h-3.5" />
+          <div className="p-4 rounded-xl bg-[#0c0c0e] border border-zinc-800/80">
+            <div className="text-xs font-medium text-zinc-400 flex items-center justify-between">
               <span>Net Savings</span>
+              <Wallet className="w-3.5 h-3.5 text-zinc-400" />
             </div>
-            <div className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+            <div className="text-xl font-semibold text-white font-mono mt-2">
               {formatINR(summary.balance)}
             </div>
           </div>
 
-          <div className="p-5 rounded-3xl backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 shadow-sm">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-violet-600 dark:text-violet-400 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5" />
+          <div className="p-4 rounded-xl bg-[#0c0c0e] border border-zinc-800/80">
+            <div className="text-xs font-medium text-zinc-400 flex items-center justify-between">
               <span>Savings Rate</span>
+              <Percent className="w-3.5 h-3.5 text-zinc-400" />
             </div>
-            <div className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+            <div className="text-xl font-semibold text-white font-mono mt-2">
               {summary.savingsRate.toFixed(1)}%
             </div>
           </div>
         </div>
 
-        {/* Spendee Donut & Detailed Category Distribution */}
-        <div className="space-y-4">
-          <h2 className="text-base font-bold text-slate-900 dark:text-white">
+        {/* Donut & Detailed Category Distribution */}
+        <div className="space-y-2">
+          <div className="text-xs font-semibold text-zinc-400">
             Category Breakdown ({selectedMonth})
-          </h2>
+          </div>
 
           <SpendingDonut
             categories={summary.categories}
@@ -131,41 +146,23 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Cashflow Comparison Visual Bar */}
-        <div className="rounded-3xl p-6 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-            Monthly Cashflow Proportion
-          </h3>
+        <div className="rounded-xl p-5 bg-[#0c0c0e] border border-zinc-800/80 space-y-3">
+          <div className="flex justify-between text-xs font-medium text-zinc-300">
+            <span>Cashflow Proportion</span>
+            <span className="font-mono text-zinc-500">
+              {summary.income > 0 ? ((summary.expenses / summary.income) * 100).toFixed(0) : 0}% outflow / income
+            </span>
+          </div>
 
-          <div className="space-y-3">
-            <div>
-              <div className="flex justify-between text-xs font-semibold mb-1">
-                <span>Income vs Expenses Ratio</span>
-                <span className="text-slate-500">
-                  {summary.income > 0 ? ((summary.expenses / summary.income) * 100).toFixed(0) : 0}% of income spent
-                </span>
-              </div>
-              <div className="w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex">
-                <div
-                  style={{ width: `${Math.min(100, summary.income > 0 ? (summary.expenses / summary.income) * 100 : 0)}%` }}
-                  className="h-full bg-rose-500 rounded-full"
-                />
-                <div
-                  style={{ width: `${Math.max(0, summary.savingsRate)}%` }}
-                  className="h-full bg-emerald-500 rounded-full"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-6 text-xs text-slate-500 font-medium pt-1">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-rose-500" />
-                <span>Expenses ({formatINR(summary.expenses)})</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-emerald-500" />
-                <span>Saved Balance ({formatINR(Math.max(0, summary.balance))})</span>
-              </div>
-            </div>
+          <div className="w-full h-2 rounded-full bg-zinc-900 overflow-hidden flex">
+            <div
+              style={{ width: `${Math.min(100, summary.income > 0 ? (summary.expenses / summary.income) * 100 : 0)}%` }}
+              className="h-full bg-zinc-400"
+            />
+            <div
+              style={{ width: `${Math.max(0, summary.savingsRate)}%` }}
+              className="h-full bg-emerald-500"
+            />
           </div>
         </div>
       </main>
@@ -174,7 +171,7 @@ export default function AnalyticsPage() {
       <QuickAddSheet
         isOpen={isQuickAddOpen}
         onClose={() => setIsQuickAddOpen(false)}
-        onSuccess={() => fetchAnalytics(selectedMonth)}
+        onSuccess={() => fetchAnalytics()}
       />
       <MobileNav onOpenQuickAdd={() => setIsQuickAddOpen(true)} />
     </div>

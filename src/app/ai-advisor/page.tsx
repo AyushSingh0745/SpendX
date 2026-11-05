@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import DesktopNav from '@/components/layout/DesktopNav';
 import MobileNav from '@/components/layout/MobileNav';
 import QuickAddSheet from '@/components/dashboard/QuickAddSheet';
-import { Sparkles, Bot, Send, CheckCircle2, TrendingUp, HelpCircle } from 'lucide-react';
+import FormattedMessage from '@/components/ai/FormattedMessage';
+import { Sparkles, ArrowUpRight, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface Message {
@@ -18,7 +19,7 @@ export default function AIAdvisorPage() {
     {
       role: 'assistant',
       content:
-        'Hello Ayush! 🌟 I am your dedicated SpendX AI Financial Advisor powered by Agnes 3.0 Flash.\n\nI have live, private access to your balances, category spendings, and budget limits in Indian Rupees (₹). You can ask me for advice, budget audits, or simply tell me what you spent (e.g. "I spent ₹250 on tea and snacks") and I will automatically record it into your ledger!',
+        'Hello Ayush. I have live access to your SpendX financial ledger. You can ask for spending advice, audit category budgets, or record transactions directly (e.g. "Spent ₹250 on groceries").',
     },
   ]);
   const [input, setInput] = useState('');
@@ -28,7 +29,7 @@ export default function AIAdvisorPage() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, loading]);
 
   const handleSend = async (customText?: string) => {
     const text = (customText || input).trim();
@@ -61,14 +62,14 @@ export default function AIAdvisorPage() {
       ]);
 
       if (data.action) {
-        confetti({ particleCount: 40, spread: 60, origin: { y: 0.7 } });
+        confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 } });
       }
     } catch (err: any) {
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          content: 'Sorry, I had trouble reaching the Agnes advisor engine. Please try again.',
+          content: 'Unable to connect to the financial advisory engine. Please check your connection.',
         },
       ]);
     } finally {
@@ -77,58 +78,57 @@ export default function AIAdvisorPage() {
   };
 
   const sampleQuestions = [
-    'How much can I safely spend per day for the rest of this month?',
-    'I spent ₹450 on McDonald\'s dinner',
+    'What is my recommended daily spending allowance?',
+    'Logged ₹450 on dinner',
     'Which category am I spending the most on?',
-    'Can I afford a ₹3,500 weekend shopping trip?',
-    'Received freelance payment of ₹12,000',
+    'Can I afford a ₹3,500 purchase this weekend?',
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white pb-28 md:pb-12 transition-colors">
+    <div className="min-h-screen bg-black text-zinc-100 pb-28 md:pb-12 font-sans flex flex-col">
       <DesktopNav onOpenQuickAdd={() => setIsQuickAddOpen(true)} />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 flex flex-col h-[calc(100vh-140px)]">
+      <main className="max-w-4xl w-full mx-auto px-4 sm:px-6 pt-6 flex-1 flex flex-col min-h-0">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between pb-4 border-b border-zinc-900 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <Bot className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300">
+              <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                <span>SpendX AI Financial Advisor</span>
-                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-blue-600 text-white">
-                  Agnes 3.0 Flash
-                </span>
+              <h1 className="text-base font-semibold tracking-tight text-white flex items-center gap-2">
+                <span>Financial Advisor</span>
+                <span className="text-xs text-zinc-500 font-mono">Agnes 3.0</span>
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Live contextual guidance • Autonomous transaction logging
-              </p>
+              <p className="text-xs text-zinc-400">Context-aware spending analysis and transaction recording</p>
             </div>
           </div>
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto py-4 space-y-4 pr-1">
+        <div
+          data-lenis-prevent="true"
+          className="flex-1 min-h-0 overflow-y-auto py-5 space-y-4 pr-1 scrollbar-thin scrollbar-thumb-zinc-800"
+        >
           {messages.map((m, idx) => (
-            <div
-              key={idx}
-              className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
-            >
+            <div key={idx} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
               <div
-                className={`max-w-[85%] sm:max-w-xl rounded-3xl p-4 sm:p-5 text-sm ${
+                className={`max-w-[85%] sm:max-w-xl rounded-xl p-4 text-xs ${
                   m.role === 'user'
-                    ? 'bg-blue-600 text-white font-medium rounded-br-none shadow-md'
-                    : 'bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 text-slate-900 dark:text-slate-100 rounded-bl-none shadow-sm'
+                    ? 'bg-blue-600 text-white font-medium'
+                    : 'bg-[#0c0c0e] border border-zinc-800/80 text-zinc-200'
                 }`}
               >
-                <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                {m.role === 'user' ? (
+                  <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                ) : (
+                  <FormattedMessage content={m.content} />
+                )}
               </div>
 
               {m.action && (
-                <div className="mt-2 max-w-md rounded-2xl p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 flex items-center gap-2.5 text-xs font-bold shadow-sm">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <div className="mt-2 max-w-md rounded-lg px-3 py-2 bg-zinc-900 border border-emerald-900/60 text-emerald-400 flex items-center gap-2 text-xs font-mono">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span>{m.action.message}</span>
                 </div>
               )}
@@ -136,22 +136,25 @@ export default function AIAdvisorPage() {
           ))}
 
           {loading && (
-            <div className="flex items-center gap-2.5 text-slate-400 text-xs py-2 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl w-fit shadow-sm">
-              <Sparkles className="w-4 h-4 animate-spin text-blue-600" />
-              <span>Agnes AI is calculating financial impact...</span>
+            <div className="flex items-center gap-2 text-zinc-400 text-xs py-2 px-3 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit">
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
+              <span>Analyzing cashflow and ledger context...</span>
             </div>
           )}
 
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Suggestion Chips */}
-        <div className="py-2 overflow-x-auto flex gap-1.5 no-scrollbar shrink-0">
+        {/* Quick Suggestion Chips */}
+        <div
+          data-lenis-prevent="true"
+          className="py-2.5 overflow-x-auto flex gap-1.5 no-scrollbar shrink-0 border-t border-zinc-900"
+        >
           {sampleQuestions.map((q, idx) => (
             <button
               key={idx}
               onClick={() => handleSend(q)}
-              className="whitespace-nowrap px-3 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:border-blue-400 shadow-sm transition-colors"
+              className="whitespace-nowrap px-3 py-1.5 rounded-md bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[11px] text-zinc-300 hover:text-white transition-colors"
             >
               {q}
             </button>
@@ -159,28 +162,31 @@ export default function AIAdvisorPage() {
         </div>
 
         {/* Input Bar */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}
-          className="pt-2 shrink-0 flex items-center gap-2"
-        >
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask anything or log spend (e.g. 'I spent 400 on petrol')..."
-            className="flex-1 px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm"
-          />
-          <button
-            type="submit"
-            disabled={!input.trim() || loading}
-            className="p-3 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white shadow-md active:scale-95 transition-all"
+        <div className="pt-2 pb-4 shrink-0">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}
+            className="flex items-center gap-2 p-1.5 rounded-xl bg-[#0c0c0e] border border-zinc-800 focus-within:border-zinc-700"
           >
-            <Send className="w-4 h-4" />
-          </button>
-        </form>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask financial advice or say 'Spent ₹350 on fuel'..."
+              className="flex-1 px-3 py-2 bg-transparent text-xs text-white placeholder:text-zinc-500 focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={!input.trim() || loading}
+              className="px-3 py-2 rounded-lg bg-white hover:bg-zinc-200 disabled:opacity-30 text-black font-medium text-xs flex items-center gap-1 transition-colors"
+            >
+              <span>Send</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </button>
+          </form>
+        </div>
       </main>
 
       <QuickAddSheet
@@ -188,6 +194,7 @@ export default function AIAdvisorPage() {
         onClose={() => setIsQuickAddOpen(false)}
         onSuccess={() => {}}
       />
+
       <MobileNav onOpenQuickAdd={() => setIsQuickAddOpen(true)} />
     </div>
   );

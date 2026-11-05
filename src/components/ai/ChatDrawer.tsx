@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Sparkles, X, Send, Bot, CheckCircle2 } from 'lucide-react';
+import { X, Send, ArrowUpRight, Check, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import FormattedMessage from './FormattedMessage';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -21,15 +22,21 @@ export default function ChatDrawer({ onTransactionLogged }: ChatDrawerProps) {
     {
       role: 'assistant',
       content:
-        'Hi Ayush! 👋 I am your SpendX AI Financial Advisor powered by Agnes 3.0 Flash. Ask me anything about your finances or tell me what you spent (e.g. "I spent ₹450 on dinner") and I will record it for you!',
+        'Hello Ayush. I have access to your live SpendX financial ledger. You can ask for spending advice, analyze your daily allowance, or record transactions directly (e.g. "Spent ₹450 on books").',
     },
   ]);
   const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, loading]);
 
   const handleSend = async (textToSend?: string) => {
     const text = (textToSend || input).trim();
@@ -61,9 +68,8 @@ export default function ChatDrawer({ onTransactionLogged }: ChatDrawerProps) {
         },
       ]);
 
-      // If an action was executed by AI, trigger celebration & refresh data
       if (data.action) {
-        confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+        confetti({ particleCount: 30, spread: 45, origin: { y: 0.7 } });
         if (onTransactionLogged) onTransactionLogged();
       }
     } catch (err: any) {
@@ -71,7 +77,7 @@ export default function ChatDrawer({ onTransactionLogged }: ChatDrawerProps) {
         ...prev,
         {
           role: 'assistant',
-          content: 'Sorry, I encountered an issue connecting to the advisor engine. Please try again in a moment.',
+          content: 'Unable to reach the financial advisory engine right now. Please check your network connection.',
         },
       ]);
     } finally {
@@ -80,81 +86,82 @@ export default function ChatDrawer({ onTransactionLogged }: ChatDrawerProps) {
   };
 
   const suggestions = [
-    'How much can I spend today?',
-    'I spent ₹350 on lunch at Subway',
+    'What is my daily allowance today?',
+    'Logged ₹350 for lunch at Subway',
     'Where is most of my money going?',
-    'Can I afford a ₹3,000 dinner this weekend?',
+    'Can I afford a ₹3,000 purchase this week?',
   ];
 
   return (
     <>
-      {/* Floating Launcher Button */}
+      {/* Sleek Floating Launcher — Vercel / Apple Style */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-20 md:bottom-6 right-5 z-40 px-4 py-3 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-white shadow-xl shadow-blue-500/30 flex items-center gap-2.5 hover:scale-105 active:scale-95 transition-all group"
+          className="fixed bottom-20 md:bottom-6 right-5 z-40 px-3.5 py-2.5 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-zinc-100 border border-zinc-700/60 shadow-xl backdrop-blur-md flex items-center gap-2 transition-all hover:border-zinc-500 active:scale-95 text-xs font-medium"
           aria-label="Open AI Advisor"
         >
-          <div className="relative">
-            <Sparkles className="w-5 h-5 animate-pulse text-amber-300" />
-            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400" />
-          </div>
-          <span className="text-xs font-bold tracking-tight">Ask SpendX AI</span>
+          <Sparkles className="w-3.5 h-3.5 text-zinc-400" />
+          <span>Financial Advisor</span>
         </button>
       )}
 
-      {/* Slide-out Glass Drawer */}
+      {/* Sleek Slide-out Drawer */}
       {isOpen && (
-        <div className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 w-[94vw] sm:w-[420px] h-[560px] rounded-3xl backdrop-blur-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800/80 shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5">
+        <div
+          data-lenis-prevent="true"
+          className="fixed bottom-20 md:bottom-6 right-4 sm:right-6 z-50 w-[94vw] sm:w-[440px] h-[580px] max-h-[85vh] rounded-2xl bg-[#09090b] border border-zinc-800 shadow-2xl flex flex-col overflow-hidden text-zinc-100 animate-in fade-in slide-in-from-bottom-3"
+        >
           {/* Header */}
-          <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-transparent">
+          <div className="px-4 py-3 border-b border-zinc-800/80 flex items-center justify-between bg-zinc-900/40">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-sm">
-                <Bot className="w-4 h-4" />
+              <div className="w-6 h-6 rounded-md bg-zinc-800 border border-zinc-700/60 flex items-center justify-center text-zinc-300">
+                <Sparkles className="w-3 h-3 text-zinc-300" />
               </div>
               <div>
-                <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  SpendX AI Financial Advisor
-                  <span className="px-1.5 py-0.5 rounded-full text-[8px] font-extrabold bg-blue-600 text-white">
-                    Agnes 3.0
-                  </span>
+                <div className="text-xs font-semibold tracking-tight text-white flex items-center gap-2">
+                  Financial Advisor
+                  <span className="text-[10px] text-zinc-500 font-mono">Agnes 3.0</span>
                 </div>
-                <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Live Context Active (INR)
-                </div>
+                <div className="text-[11px] text-zinc-400">Contextual financial intelligence</div>
               </div>
             </div>
 
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              aria-label="Close"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 text-xs">
+          {/* Messages Container — Guaranteed Scroll with Lenis Prevention */}
+          <div
+            ref={messagesContainerRef}
+            data-lenis-prevent="true"
+            className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 space-y-3.5 text-xs scrollbar-thin scrollbar-thumb-zinc-700"
+          >
             {messages.map((m, idx) => (
-              <div
-                key={idx}
-                className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
-              >
+              <div key={idx} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
+                  className={`max-w-[88%] rounded-xl px-3.5 py-2.5 ${
                     m.role === 'user'
-                      ? 'bg-blue-600 text-white font-medium rounded-br-none shadow-sm'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-none border border-slate-200/50 dark:border-slate-700/50'
+                      ? 'bg-blue-600 text-white font-medium'
+                      : 'bg-zinc-900/90 border border-zinc-800 text-zinc-200'
                   }`}
                 >
-                  <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                  {m.role === 'user' ? (
+                    <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                  ) : (
+                    <FormattedMessage content={m.content} />
+                  )}
                 </div>
 
-                {/* Action Confirmation Badge */}
+                {/* Structured Action Receipt */}
                 {m.action && (
-                  <div className="mt-1.5 max-w-[85%] rounded-xl p-2.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 flex items-center gap-2 text-[11px] font-semibold">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <div className="mt-1.5 max-w-[88%] rounded-lg px-3 py-2 bg-zinc-900 border border-emerald-900/60 text-emerald-400 flex items-center gap-2 text-[11px] font-mono">
+                    <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                     <span>{m.action.message}</span>
                   </div>
                 )}
@@ -162,22 +169,23 @@ export default function ChatDrawer({ onTransactionLogged }: ChatDrawerProps) {
             ))}
 
             {loading && (
-              <div className="flex items-center gap-2 text-slate-400 text-xs py-2 px-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl w-fit">
-                <Sparkles className="w-3.5 h-3.5 animate-spin text-blue-600" />
-                <span>Thinking with financial rationale...</span>
+              <div className="flex items-center gap-2 text-zinc-400 text-xs py-2 px-3 bg-zinc-900/60 border border-zinc-800/80 rounded-lg w-fit">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
+                <span>Evaluating financial balance and allowance...</span>
               </div>
             )}
-
-            <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Suggestion Chips */}
-          <div className="px-3 py-2 bg-slate-50/80 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 overflow-x-auto flex gap-1.5 no-scrollbar">
+          {/* Quick Queries */}
+          <div
+            data-lenis-prevent="true"
+            className="px-3 py-2 bg-zinc-950 border-t border-zinc-800/80 overflow-x-auto flex gap-1.5 no-scrollbar shrink-0"
+          >
             {suggestions.map((s, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(s)}
-                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:border-blue-400 transition-colors"
+                className="whitespace-nowrap px-2.5 py-1 rounded-md bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-[11px] text-zinc-300 hover:text-white transition-colors"
               >
                 {s}
               </button>
@@ -185,7 +193,7 @@ export default function ChatDrawer({ onTransactionLogged }: ChatDrawerProps) {
           </div>
 
           {/* Input Bar */}
-          <div className="p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <div className="p-3 border-t border-zinc-800 bg-[#09090b] shrink-0">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -197,15 +205,16 @@ export default function ChatDrawer({ onTransactionLogged }: ChatDrawerProps) {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask advice or say 'I spent 350 on coffee'..."
-                className="flex-1 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border-none text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                placeholder="Ask financial advice or log spend (e.g. 'Spent ₹350 on fuel')..."
+                className="flex-1 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || loading}
-                className="p-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white shadow-sm transition-transform active:scale-95"
+                className="p-2 rounded-lg bg-white hover:bg-zinc-200 disabled:opacity-30 text-black transition-colors"
+                aria-label="Send"
               >
-                <Send className="w-3.5 h-3.5" />
+                <ArrowUpRight className="w-4 h-4" />
               </button>
             </form>
           </div>

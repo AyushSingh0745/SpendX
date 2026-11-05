@@ -66,14 +66,12 @@ export default function QuickAddSheet({ isOpen, onClose, onSuccess }: QuickAddSh
         if (!res.ok) throw new Error('Failed to record income');
       }
 
-      // Confetti burst for saving/recording!
       confetti({
-        particleCount: 50,
-        spread: 60,
+        particleCount: 30,
+        spread: 45,
         origin: { y: 0.8 },
       });
 
-      // Reset and close
       setAmount('');
       setDescription('');
       onSuccess();
@@ -93,53 +91,57 @@ export default function QuickAddSheet({ isOpen, onClose, onSuccess }: QuickAddSh
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
-      <div className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl backdrop-blur-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 max-h-[92vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+      <div
+        data-lenis-prevent="true"
+        className="w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-[#0c0c0e] border border-zinc-800 shadow-2xl p-6 max-h-[92vh] overflow-y-auto text-zinc-100"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-full">
+        <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+          <div className="flex items-center gap-1 bg-zinc-900 p-0.5 rounded-lg border border-zinc-800">
             <button
               type="button"
               onClick={() => setType('Expense')}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                type === 'Expense' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300'
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                type === 'Expense' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              💸 Expense
+              Expense
             </button>
             <button
               type="button"
               onClick={() => setType('Income')}
-              className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                type === 'Income' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300'
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                type === 'Income' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              💵 Income
+              Income
             </button>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
+            aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {error && (
-          <div className="mt-3 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-medium">
+          <div className="mt-3 p-2.5 rounded-lg bg-rose-950/60 border border-rose-900/60 text-rose-300 text-xs font-mono">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Amount Input */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-              Amount (INR) *
+            <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+              Amount (INR)
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-bold text-slate-400">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xl font-mono text-zinc-500">
                 ₹
               </span>
               <input
@@ -149,7 +151,7 @@ export default function QuickAddSheet({ isOpen, onClose, onSuccess }: QuickAddSh
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="w-full pl-10 pr-4 py-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-2xl font-extrabold text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="w-full pl-9 pr-4 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xl font-mono font-medium text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600"
                 autoFocus
               />
             </div>
@@ -157,10 +159,10 @@ export default function QuickAddSheet({ isOpen, onClose, onSuccess }: QuickAddSh
 
           {/* Category Chips */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-              {type === 'Expense' ? 'Category *' : 'Source *'}
+            <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+              {type === 'Expense' ? 'Category' : 'Source'}
             </label>
-            <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-1">
+            <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1">
               {(type === 'Expense' ? EXPENSE_CATEGORIES : INCOME_SOURCES).map((item) => {
                 const isSelected = type === 'Expense' ? category === item.name : source === item.name;
                 return (
@@ -168,18 +170,13 @@ export default function QuickAddSheet({ isOpen, onClose, onSuccess }: QuickAddSh
                     key={item.name}
                     type="button"
                     onClick={() => (type === 'Expense' ? setCategory(item.name) : setSource(item.name))}
-                    style={{
-                      borderColor: isSelected ? item.color : undefined,
-                      backgroundColor: isSelected ? `${item.color}20` : undefined,
-                      color: isSelected ? item.color : undefined,
-                    }}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+                    className={`px-2.5 py-1 rounded-md text-xs transition-colors flex items-center gap-1.5 border ${
                       isSelected
-                        ? 'border-2 font-bold shadow-sm'
-                        : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-400'
+                        ? 'bg-zinc-800 border-zinc-600 text-white font-medium'
+                        : 'border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
                     }`}
                   >
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="w-2 h-2 rounded-sm" style={{ backgroundColor: item.color }} />
                     <span>{item.name}</span>
                   </button>
                 );
@@ -189,22 +186,22 @@ export default function QuickAddSheet({ isOpen, onClose, onSuccess }: QuickAddSh
 
           {/* Note / Description */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-              Description / Note
+            <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+              Description (Optional)
             </label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Subway lunch, petrol, freelance payment"
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              placeholder="e.g. Subway lunch, train ticket"
+              className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-zinc-600"
             />
           </div>
 
           {/* Date with Quick Buttons */}
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-              Date *
+            <label className="block text-xs font-medium text-zinc-400 mb-1.5">
+              Date
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -212,19 +209,19 @@ export default function QuickAddSheet({ isOpen, onClose, onSuccess }: QuickAddSh
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="flex-1 px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-900 dark:text-white"
+                className="flex-1 px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-white focus:outline-none focus:border-zinc-600"
               />
               <button
                 type="button"
                 onClick={setToday}
-                className="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
+                className="px-2.5 py-2 rounded-lg text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 transition-colors"
               >
                 Today
               </button>
               <button
                 type="button"
                 onClick={setYesterday}
-                className="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
+                className="px-2.5 py-2 rounded-lg text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 transition-colors"
               >
                 Yesterday
               </button>
@@ -235,11 +232,7 @@ export default function QuickAddSheet({ isOpen, onClose, onSuccess }: QuickAddSh
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3.5 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 shadow-lg active:scale-98 transition-all ${
-              type === 'Expense'
-                ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/25'
-                : 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/25'
-            }`}
+            className="w-full py-2.5 rounded-lg bg-white hover:bg-zinc-200 text-black font-medium text-xs flex items-center justify-center gap-1.5 transition-colors"
           >
             <Check className="w-4 h-4" />
             <span>{loading ? 'Recording...' : `Record ${type}`}</span>

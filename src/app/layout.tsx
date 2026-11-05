@@ -16,7 +16,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#090d16',
+  themeColor: '#000000',
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full antialiased dark">
-      <body className="min-h-full flex flex-col font-sans bg-slate-950 text-slate-100">
+      <body className="min-h-full flex flex-col font-sans bg-black text-zinc-100 selection:bg-zinc-800 selection:text-white">
         <LenisProvider>{children}</LenisProvider>
       </body>
     </html>
