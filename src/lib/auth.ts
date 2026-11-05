@@ -42,9 +42,7 @@ export async function getSessionUser(): Promise<User | null> {
     const cookieStore = await cookies();
     const token = cookieStore.get(COOKIE_NAME)?.value;
     if (!token) {
-      // Fallback: If no cookie in development, return default admin user
-      const local = readLocalData();
-      return local.users[0] || null;
+      return null;
     }
 
     const payload = verifyToken(token);
@@ -85,6 +83,13 @@ export async function setSessionCookie(user: User): Promise<string> {
 
 export async function clearSessionCookie(): Promise<void> {
   const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAME, '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 0,
+    path: '/',
+  });
   cookieStore.delete(COOKIE_NAME);
 }
 

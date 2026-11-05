@@ -33,15 +33,16 @@ export default function DesktopNav({ userName, onOpenQuickAdd }: DesktopNavProps
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/me', { method: 'POST' });
-      router.push('/login');
+      // Force full reload to /login to clear all client memory & state
+      window.location.href = '/login';
     } catch {
-      router.push('/login');
+      window.location.href = '/login';
     }
   };
 
   return (
-    <header className="sticky top-0 z-40 hidden md:block w-full bg-black/80 backdrop-blur-md border-b border-zinc-900">
-      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+    <header className="sticky top-0 z-40 w-full bg-black/80 backdrop-blur-md border-b border-zinc-900">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
         {/* Brand */}
         <div className="flex items-center gap-6">
           <Link href="/dashboard" className="flex items-center gap-2 text-white font-semibold tracking-tight text-sm">
@@ -51,8 +52,8 @@ export default function DesktopNav({ userName, onOpenQuickAdd }: DesktopNavProps
             <span>SpendX</span>
           </Link>
 
-          {/* Navigation Items */}
-          <nav className="flex items-center gap-1">
+          {/* Navigation Items (Visible on Desktop, hidden on Mobile because Mobile has bottom nav) */}
+          <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -72,12 +73,12 @@ export default function DesktopNav({ userName, onOpenQuickAdd }: DesktopNavProps
           </nav>
         </div>
 
-        {/* Right Actions */}
+        {/* Right Actions: Visible on BOTH Mobile & Desktop */}
         <div className="flex items-center gap-2">
           {onOpenQuickAdd && (
             <button
               onClick={onOpenQuickAdd}
-              className="px-2.5 py-1 rounded-md bg-white hover:bg-zinc-200 text-black font-medium text-xs flex items-center gap-1 transition-colors"
+              className="hidden sm:flex px-2.5 py-1 rounded-md bg-white hover:bg-zinc-200 text-black font-medium text-xs items-center gap-1 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Record</span>
@@ -93,13 +94,15 @@ export default function DesktopNav({ userName, onOpenQuickAdd }: DesktopNavProps
             <Download className="w-3.5 h-3.5" />
           </a>
 
+          {/* Explicit Sign Out Button — Accessible Everywhere */}
           <button
             onClick={handleLogout}
-            className="p-1.5 rounded-md text-zinc-400 hover:text-rose-400 hover:bg-zinc-900 transition-colors"
-            title="Log Out"
+            className="px-2.5 py-1 rounded-md text-xs font-medium text-zinc-300 hover:text-rose-400 bg-zinc-900/80 hover:bg-zinc-900 border border-zinc-800 transition-colors flex items-center gap-1.5 active:scale-95"
+            title="Log Out of SpendX"
             aria-label="Log Out"
           >
             <LogOut className="w-3.5 h-3.5" />
+            <span>Sign Out</span>
           </button>
         </div>
       </div>
