@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth';
 import { getUnifiedTransactions } from '@/lib/financials';
 
-export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const user = await getSessionUser();
