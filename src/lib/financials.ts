@@ -69,6 +69,25 @@ export async function addExpense(
   userId: string,
   data: { amount: number; category: string; description?: string; date: string; wallet_id?: string | null }
 ): Promise<Expense> {
+  if (isSupabaseConfigured && supabase) {
+    const payload: any = {
+      user_id: userId,
+      amount: Number(data.amount),
+      category: data.category,
+      description: data.description || '',
+      date: data.date,
+    };
+    if (data.wallet_id && typeof data.wallet_id === 'string' && data.wallet_id.length > 10) {
+      payload.wallet_id = data.wallet_id;
+    }
+    const { data: inserted, error } = await supabase.from('expenses').insert(payload).select().single();
+    if (error) {
+      console.error('Supabase addExpense error:', error);
+      throw error;
+    }
+    return inserted;
+  }
+
   const newExp: Expense = {
     id: `exp-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
     user_id: userId,
@@ -79,12 +98,6 @@ export async function addExpense(
     wallet_id: data.wallet_id || null,
     created_at: new Date().toISOString(),
   };
-
-  if (isSupabaseConfigured && supabase) {
-    const { data: inserted, error } = await supabase.from('expenses').insert(newExp).select().single();
-    if (error) throw error;
-    return inserted;
-  }
 
   const local = readLocalData();
   local.expenses.unshift(newExp);
@@ -107,6 +120,24 @@ export async function addIncome(
   userId: string,
   data: { amount: number; source: string; date: string; wallet_id?: string | null }
 ): Promise<Income> {
+  if (isSupabaseConfigured && supabase) {
+    const payload: any = {
+      user_id: userId,
+      amount: Number(data.amount),
+      source: data.source,
+      date: data.date,
+    };
+    if (data.wallet_id && typeof data.wallet_id === 'string' && data.wallet_id.length > 10) {
+      payload.wallet_id = data.wallet_id;
+    }
+    const { data: inserted, error } = await supabase.from('income').insert(payload).select().single();
+    if (error) {
+      console.error('Supabase addIncome error:', error);
+      throw error;
+    }
+    return inserted;
+  }
+
   const newInc: Income = {
     id: `inc-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
     user_id: userId,
@@ -116,12 +147,6 @@ export async function addIncome(
     wallet_id: data.wallet_id || null,
     created_at: new Date().toISOString(),
   };
-
-  if (isSupabaseConfigured && supabase) {
-    const { data: inserted, error } = await supabase.from('income').insert(newInc).select().single();
-    if (error) throw error;
-    return inserted;
-  }
 
   const local = readLocalData();
   local.income.unshift(newInc);

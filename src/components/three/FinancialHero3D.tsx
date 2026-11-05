@@ -96,11 +96,11 @@ export default function FinancialHero3D() {
 
     // Animation Loop
     let animId: number;
-    let clock = new THREE.Clock();
+    const startTime = performance.now();
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
+      const elapsedTime = (performance.now() - startTime) / 1000;
 
       // Smooth mouse follow
       targetX += (mouseX - targetX) * 0.05;
