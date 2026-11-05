@@ -1,0 +1,135 @@
+{
+  "users": [
+    {
+      "id": "user-ayush-001",
+      "email": "ayush@spendx.app",
+      "name": "Ayush Singh",
+      "created_at": "2026-11-05T15:12:51.507Z"
+    }
+  ],
+  "wallets": [
+    {
+      "id": "wallet-main",
+      "user_id": "user-ayush-001",
+      "name": "Main Wallet (Cash)",
+      "type": "Cash",
+      "balance": 1500,
+      "color": "#2563EB",
+      "created_at": "2026-11-05T15:12:51.509Z"
+    },
+    {
+      "id": "wallet-bank",
+      "user_id": "user-ayush-001",
+      "name": "HDFC Savings Account",
+      "type": "Bank",
+      "balance": 40000,
+      "color": "#10B981",
+      "created_at": "2026-11-05T15:12:51.509Z"
+    }
+  ],
+  "expenses": [
+    {
+      "id": "exp-1793891651822-uz0e",
+      "user_id": "user-ayush-001",
+      "amount": 350,
+      "category": "Food & Drinks",
+      "description": "lunch at Subway",
+      "date": "2026-11-05",
+      "wallet_id": null,
+      "created_at": "2026-11-05T15:14:11.822Z"
+    },
+    {
+      "id": "exp-1793891600756-eq45",
+      "user_id": "user-ayush-001",
+      "amount": 350,
+      "category": "Food & Drinks",
+      "description": "lunch at Subway",
+      "date": "2026-11-05",
+      "wallet_id": null,
+      "created_at": "2026-11-05T15:13:20.756Z"
+    },
+    {
+      "id": "exp-1",
+      "user_id": "user-ayush-001",
+      "wallet_id": "wallet-main",
+      "amount": 500,
+      "category": "Food & Drinks",
+      "description": "GH (Migrated from SQLite)",
+      "date": "2026-09-13",
+      "created_at": "2026-09-13T10:00:00Z"
+    },
+    {
+      "id": "exp-2",
+      "user_id": "user-ayush-001",
+      "wallet_id": "wallet-main",
+      "amount": 300,
+      "category": "Transportation",
+      "description": "Travel (Migrated from SQLite)",
+      "date": "2026-09-20",
+      "created_at": "2026-09-20T11:00:00Z"
+    },
+    {
+      "id": "exp-3",
+      "user_id": "user-ayush-001",
+      "wallet_id": "wallet-bank",
+      "amount": 48598,
+      "category": "Food & Drinks",
+      "description": "Aisehi (Migrated from SQLite)",
+      "date": "2026-11-01",
+      "created_at": "2026-11-01T14:30:00Z"
+    }
+  ],
+  "income": [
+    {
+      "id": "inc-1",
+      "user_id": "user-ayush-001",
+      "wallet_id": "wallet-main",
+      "amount": 10000,
+      "source": "Family & Allowance",
+      "date": "2026-09-13",
+      "created_at": "2026-09-13T09:00:00Z"
+    },
+    {
+      "id": "inc-2",
+      "user_id": "user-ayush-001",
+      "wallet_id": "wallet-bank",
+      "amount": 40000,
+      "source": "Salary",
+      "date": "2026-11-01",
+      "created_at": "2026-11-01T08:00:00Z"
+    }
+  ],
+  "budgets": [
+    {
+      "id": "bud-1",
+      "user_id": "user-ayush-001",
+      "category": "Food & Drinks",
+      "monthly_limit": 15000,
+      "created_at": "2026-11-05T15:12:51.509Z"
+    },
+    {
+      "id": "bud-2",
+      "user_id": "user-ayush-001",
+      "category": "Transportation",
+      "monthly_limit": 5000,
+      "created_at": "2026-11-05T15:12:51.509Z"
+    },
+    {
+      "id": "bud-3",
+      "user_id": "user-ayush-001",
+      "category": "Shopping",
+      "monthly_limit": 8000,
+      "created_at": "2026-11-05T15:12:51.509Z"
+    }
+  ],
+  "chat_messages": [
+    {
+      "id": "chat-welcome",
+      "user_id": "user-ayush-001",
+      "role": "assistant",
+      "content": "Hello Ayush! 👋 I am your SpendX AI Financial Advisor powered by Agnes 3.0 Flash. I have full access to your income, expenses, and budgets. Ask me for financial advice or tell me what you spent (e.g., \"I spent ₹350 on pizza\") and I will record it for you!",
+      "action_taken": null,
+      "created_at": "2026-11-05T15:12:51.509Z"
+    }
+  ]
+}

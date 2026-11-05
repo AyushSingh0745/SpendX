@@ -1,0 +1,21 @@
+{
+  "name": "SpendX - Smart Money & AI Expense Tracker",
+  "short_name": "SpendX",
+  "description": "Smart personal finance and AI-guided money manager inspired by Spendee and Apple design",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
