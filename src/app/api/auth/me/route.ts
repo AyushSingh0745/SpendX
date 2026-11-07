@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getSessionUser, clearSessionCookie } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(req: Request) {
   const user = await getSessionUser();
   if (!user) {
     return NextResponse.json({ authenticated: false, user: null }, { status: 401 });

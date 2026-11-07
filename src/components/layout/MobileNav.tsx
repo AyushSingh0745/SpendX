@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ReceiptText, PieChart, Sparkles, Plus } from 'lucide-react';
+import { LayoutDashboard, ReceiptText, Sparkles, Plus, User } from 'lucide-react';
 
 interface MobileNavProps {
   onOpenQuickAdd: () => void;
@@ -13,8 +13,8 @@ export default function MobileNav({ onOpenQuickAdd }: MobileNavProps) {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden pb-safe">
-      <div className="bg-[#09090b]/95 backdrop-blur-md border-t border-zinc-800/80 px-4 py-2 flex items-center justify-around">
-        {/* Tab 1: Home */}
+      <div className="bg-[#09090b]/95 backdrop-blur-md border-t border-zinc-800/80 px-3 py-2 flex items-center justify-around">
+        {/* Tab 1: Overview */}
         <Link
           href="/dashboard"
           className={`flex flex-col items-center gap-1 transition-colors ${
@@ -45,18 +45,7 @@ export default function MobileNav({ onOpenQuickAdd }: MobileNavProps) {
           <Plus className="w-5 h-5 stroke-[2.5]" />
         </button>
 
-        {/* Tab 3: Reports */}
-        <Link
-          href="/analytics"
-          className={`flex flex-col items-center gap-1 transition-colors ${
-            pathname === '/analytics' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
-          }`}
-        >
-          <PieChart className="w-4 h-4" />
-          <span className="text-[10px] font-medium">Reports</span>
-        </Link>
-
-        {/* Tab 4: Advisor */}
+        {/* Tab 3: Advisor */}
         <Link
           href="/ai-advisor"
           className={`flex flex-col items-center gap-1 transition-colors ${
@@ -65,6 +54,17 @@ export default function MobileNav({ onOpenQuickAdd }: MobileNavProps) {
         >
           <Sparkles className="w-4 h-4" />
           <span className="text-[10px] font-medium">Advisor</span>
+        </Link>
+
+        {/* Tab 4: Profile / Account */}
+        <Link
+          href="/profile"
+          className={`flex flex-col items-center gap-1 transition-colors ${
+            pathname === '/profile' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+          }`}
+        >
+          <User className="w-4 h-4" />
+          <span className="text-[10px] font-medium">Profile</span>
         </Link>
       </div>
     </div>

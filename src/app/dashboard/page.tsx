@@ -102,7 +102,7 @@ export default function DashboardPage() {
 
             <button
               onClick={() => setIsQuickAddOpen(true)}
-              className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-black text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="sm:hidden px-3.5 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-black text-xs font-medium flex items-center gap-1.5 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Record</span>

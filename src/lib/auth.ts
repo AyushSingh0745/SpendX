@@ -56,8 +56,10 @@ export async function getSessionUser(): Promise<User | null> {
       const user = local.users.find((u) => u.id === payload.userId);
       return user || null;
     }
-  } catch (err) {
-    console.error('getSessionUser error:', err);
+  } catch (err: any) {
+    if (err?.digest !== 'HANGING_PROMISE_REJECTION' && err?.digest !== 'DYNAMIC_SERVER_USAGE') {
+      console.error('getSessionUser error:', err);
+    }
     return null;
   }
 }

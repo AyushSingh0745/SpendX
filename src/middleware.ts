@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('spendx_session')?.value;
   const { pathname } = request.nextUrl;
 
-  const protectedRoutes = ['/dashboard', '/transactions', '/analytics', '/budgets', '/ai-advisor'];
+  const protectedRoutes = ['/dashboard', '/transactions', '/analytics', '/budgets', '/ai-advisor', '/profile'];
   const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
 
   // If trying to access protected route without valid session token
@@ -36,6 +36,7 @@ export const config = {
     '/analytics/:path*',
     '/budgets/:path*',
     '/ai-advisor/:path*',
+    '/profile/:path*',
     '/login',
   ],
 };

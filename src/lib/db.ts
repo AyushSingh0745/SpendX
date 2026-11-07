@@ -145,7 +145,7 @@ function getInitialLocalData(): LocalDatabase {
         user_id: defaultUserId,
         role: 'assistant',
         content:
-          'Hello Ayush! 👋 I am your SpendX AI Financial Advisor powered by Agnes 3.0 Flash. I have full access to your income, expenses, and budgets. Ask me for financial advice or tell me what you spent (e.g., "I spent ₹350 on pizza") and I will record it for you!',
+          'Hello Ayush. I am your SpendX AI Financial Advisor powered by Agnes 3.0 Flash. I have full access to your income, expenses, and budgets. Ask me for financial advice or tell me what you spent (e.g., "I spent ₹350 on lunch") and I will record it for you.',
         action_taken: null,
         created_at: new Date().toISOString(),
       },

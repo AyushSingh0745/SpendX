@@ -137,7 +137,7 @@ export default function AIAdvisorPage() {
 
           {loading && (
             <div className="flex items-center gap-2 text-zinc-400 text-xs py-2 px-3 bg-zinc-900/60 border border-zinc-800 rounded-lg w-fit">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
               <span>Analyzing cashflow and ledger context...</span>
             </div>
           )}

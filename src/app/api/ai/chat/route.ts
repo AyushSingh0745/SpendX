@@ -57,7 +57,7 @@ export async function POST(req: Request) {
           actionExecuted = {
             type: 'ADD_EXPENSE',
             details: exp,
-            message: `✅ Automatically recorded expense of ₹${exp.amount} under ${exp.category}`,
+            message: `Recorded expense of ₹${exp.amount} under ${exp.category}`,
           };
         } else if (actionData.type === 'ADD_INCOME') {
           const inc = await addIncome(user.id, {
@@ -68,14 +68,14 @@ export async function POST(req: Request) {
           actionExecuted = {
             type: 'ADD_INCOME',
             details: inc,
-            message: `✅ Automatically recorded income of ₹${inc.amount} from ${inc.source}`,
+            message: `Recorded income of ₹${inc.amount} from ${inc.source}`,
           };
         } else if (actionData.type === 'SET_BUDGET') {
           const bud = await upsertBudget(user.id, actionData.category, Number(actionData.amount));
           actionExecuted = {
             type: 'SET_BUDGET',
             details: bud,
-            message: `✅ Set budget of ₹${bud.monthly_limit} for ${bud.category}`,
+            message: `Set budget of ₹${bud.monthly_limit} for ${bud.category}`,
           };
         }
 

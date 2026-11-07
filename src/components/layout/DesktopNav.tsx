@@ -11,6 +11,7 @@ import {
   LogOut,
   Download,
   Plus,
+  User,
 } from 'lucide-react';
 
 interface DesktopNavProps {
@@ -93,6 +94,20 @@ export default function DesktopNav({ userName, onOpenQuickAdd }: DesktopNavProps
           >
             <Download className="w-3.5 h-3.5" />
           </a>
+
+          {/* Profile / Account Settings Link */}
+          <Link
+            href="/profile"
+            className={`p-1.5 rounded-md transition-colors flex items-center justify-center ${
+              pathname === '/profile'
+                ? 'bg-zinc-800 text-white border border-zinc-700'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
+            }`}
+            title="Account & Security"
+            aria-label="Profile Settings"
+          >
+            <User className="w-3.5 h-3.5" />
+          </Link>
 
           {/* Explicit Sign Out Button — Accessible Everywhere */}
           <button

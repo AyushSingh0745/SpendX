@@ -3,7 +3,7 @@ import { getSessionUser } from '@/lib/auth';
 import { getUnifiedTransactions } from '@/lib/financials';
 
 
-export async function GET() {
+export async function GET(req: Request) {
   const user = await getSessionUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

@@ -3,11 +3,18 @@ import './globals.css';
 import LenisProvider from '@/components/layout/LenisProvider';
 
 export const metadata: Metadata = {
-  title: 'SpendX — Smart Money & AI Expense Tracker',
-  description: 'Next-generation personal finance PWA inspired by Spendee and Apple design. Track expenses in INR (₹), monitor daily allowances, and get advice from Agnes 3.0 Flash AI.',
+  title: 'SpendX — Financial Intelligence & Expense Tracker',
+  description: 'Smart personal finance and AI-guided money manager inspired by Copilot and Apple design. Track expenses in INR (₹), monitor daily allowances, and audit category budgets.',
   manifest: '/manifest.json',
   icons: {
-    icon: '/icon.png',
+    icon: [
+      { url: '/icon.png', sizes: '192x192', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
 };
 
